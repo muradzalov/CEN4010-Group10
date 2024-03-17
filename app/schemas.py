@@ -22,28 +22,15 @@ class Book(BookBase):
 
 class UserBase(BaseModel):
     username: str
+    password: str
     email: str
-    home_address: Optional[str] = None
+    home_address: Optional[str]
 
 class UserCreate(UserBase):
-    password: str
+    pass
 
 class User(UserBase):
     user_id: int
-
-    class Config:
-        orm_mode = True
-
-class CartItemBase(BaseModel):
-    book_id: int
-    quantity: int
-
-class CartItemCreate(CartItemBase):
-    pass
-
-class CartItem(CartItemBase):
-    item_id: int
-    cart_id: int
 
     class Config:
         orm_mode = True
@@ -56,7 +43,21 @@ class ShoppingCartCreate(ShoppingCartBase):
 
 class ShoppingCart(ShoppingCartBase):
     cart_id: int
-    items: List[CartItem] = []
+    user: User
+
+    class Config:
+        orm_mode = True
+
+class CartItemBase(BaseModel):
+    cart_id: int
+    book_id: int
+    quantity: int
+
+class CartItemCreate(CartItemBase):
+    pass
+
+class CartItem(CartItemBase):
+    item_id: int
 
     class Config:
         orm_mode = True
