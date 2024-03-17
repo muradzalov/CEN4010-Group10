@@ -8,7 +8,7 @@ from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem
 router = APIRouter()
 
 @router.post("/shopping-cart/{user_id}/add", response_model=ShoppingCartSchema)
-async def add_book_to_cart(user_id: int, item: CartItem, db: Session = Depends(get_db)):
+async def add_book_to_cart(user_id: int, book_id: int, quantity: int, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -20,11 +20,11 @@ async def add_book_to_cart(user_id: int, item: CartItem, db: Session = Depends(g
         db.commit()
         db.refresh(cart)
 
-    book = db.query(BookModel).filter(BookModel.id == item.book_id).first()
+    book = db.query(BookModel).filter(BookModel.id == book_id).first()
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
 
-    cart_item = CartItemModel(cart_id=cart.cart_id, book_id=book.id, quantity=item.quantity)
+    cart_item = CartItemModel(cart_id=cart.cart_id, book_id=book.id, quantity=quantity)
     db.add(cart_item)
     db.commit()
     db.refresh(cart_item)
