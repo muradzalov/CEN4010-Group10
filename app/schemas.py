@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 # Pydantic models for data validation
 class BookBase(BaseModel):
@@ -20,6 +20,20 @@ class Book(BookBase):
     class Config:
         orm_mode = True
 
+class UserBase(BaseModel):
+    username: str
+    email: str
+    home_address: Optional[str] = None
+
+class UserCreate(UserBase):
+    password: str
+
+class User(UserBase):
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
 class CartItemBase(BaseModel):
     book_id: int
     quantity: int
@@ -28,7 +42,7 @@ class CartItemCreate(CartItemBase):
     pass
 
 class CartItem(CartItemBase):
-    id: int
+    item_id: int
     cart_id: int
 
     class Config:
@@ -41,7 +55,7 @@ class ShoppingCartCreate(ShoppingCartBase):
     pass
 
 class ShoppingCart(ShoppingCartBase):
-    id: int
+    cart_id: int
     items: List[CartItem] = []
 
     class Config:
