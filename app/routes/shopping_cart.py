@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..dependencies import get_db
 from ..models import ShoppingCart as ShoppingCartModel, CartItem as CartItemModel, Book as BookModel, User as UserModel
-from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem as CartItemSchema
+from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem
 
 router = APIRouter()
 
 @router.post("/shopping-cart/{user_id}/add", response_model=ShoppingCartSchema)
-async def add_book_to_cart(user_id: int, item: CartItemSchema, db: Session = Depends(get_db)):
+async def add_book_to_cart(user_id: int, item: CartItem, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -40,7 +40,7 @@ async def get_cart_subtotal(user_id: int, db: Session = Depends(get_db)):
     subtotal = sum(item.quantity * item.book.price for item in cart.cart_items)
     return subtotal
 
-@router.get("/shopping-cart/{user_id}/items", response_model=List[CartItemSchema])
+@router.get("/shopping-cart/{user_id}/items", response_model=List[CartItem])
 async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
     if not cart:
