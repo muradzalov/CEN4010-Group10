@@ -7,8 +7,8 @@ from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem
 
 router = APIRouter()
 
-#Functionality: Retrieve the subtotal price of all items in the user’s shopping cart
-    # Logic: Give a user Id,return the subtotal of the books in the cart
+# Functionality: Retrieve the subtotal price of all items in the user’s shopping cart
+    # Logic: Given a user Id, return the subtotal of the books in the cart
     # HTTP Request Type: GET
     # Parameters Sent: User Id
     # Response Data: Calculated Subtotal
@@ -21,8 +21,8 @@ async def get_cart_subtotal(user_id: int, db: Session = Depends(get_db)):
     subtotal = sum(item.quantity * item.book.price for item in cart.cart_items)
     return subtotal
 
-#Functionality: Add a book to the shopping cart.
-    # Logic: Provided with a book Id and a User Id, add the book to the user’s shopping cart.
+# Functionality: Add a book to the shopping cart
+    # Logic: Provided with a book Id and a User Id, add the book to the user’s shopping cart
     # HTTP Request Type: POST
     # Parameters Sent: Book Id, User Id
     # Response Data: None
@@ -47,8 +47,8 @@ async def add_book_to_cart(user_id: int, book_id: int, db: Session = Depends(get
     db.add(cart_item)
     db.commit()
 
-#Functionality: Retrieve the list of book(s) in the user’s shopping cart.
-    # Logic: Give a user Id, return a list of books that are in the shopping cart.
+# Functionality: Retrieve the list of books in the user’s shopping cart
+    # Logic: Given a user Id, return a list of books that are in the shopping cart
     # HTTP Request Type: GET
     # Parameters Sent: User Id
     # Response Data: List of Book Objects
@@ -60,18 +60,18 @@ async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
 
     return cart.cart_items
 
-#Functionality: Delete a book from the shopping cart instance for that user.
-    # Logic: Given a book If and a User Id, remove the book from the user’s shopping cart.
+# Functionality: Delete a book from the shopping cart instance for that user
+    # Logic: Given a book Id and a User Id, remove the book from the user’s shopping cart
     # HTTP Request Type: DELETE
     # Parameters Sent: Book Id, User Id
     # Response Data: None
-@router.delete("/shopping-cart/{user_id}/remove/{item_id}", response_model=None)
-async def remove_book_from_cart(user_id: int, item_id: int, db: Session = Depends(get_db)):
+@router.delete("/shopping-cart/{user_id}/remove/{book_id}", response_model=None)
+async def remove_book_from_cart(user_id: int, book_id: int, db: Session = Depends(get_db)):
     cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
 
-    item = db.query(CartItemModel).filter(CartItemModel.item_id == item_id, CartItemModel.cart_id == cart.cart_id).first()
+    item = db.query(CartItemModel).filter(CartItemModel.book_id == book_id, CartItemModel.cart_id == cart.cart_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Cart item not found")
 
