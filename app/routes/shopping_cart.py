@@ -58,14 +58,7 @@ async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
 
-    cart_items = []
-    for item in cart.cart_items:
-        book = db.query(BookModel).filter(BookModel.id == item.book_id).first()
-        if book:
-            cart_item = CartItem(book=book, quantity=item.quantity)
-            cart_items.append(cart_item)
-
-    return cart_items
+    return cart.cart_items
 
 # Functionality: Delete a book from the shopping cart instance for that user
     # Logic: Given a book Id and a User Id, remove the book from the user’s shopping cart
