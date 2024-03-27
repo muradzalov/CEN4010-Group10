@@ -7,7 +7,7 @@ from sqlalchemy import text
 app = FastAPI()
 
 # Checks to see if the API is connected to the database
-@app.get("/server-healthcheck")
+@app.get("/server-db-healthcheck", summary="Status of Server Connection to DB", description="Checks the connection between the server and the database. Returns 'healthy' if the connection is established successfully; otherwise, returns 'unhealthy'.")
 def health_check(db: Session = Depends(get_db)):
     try:
         db.execute(text('SELECT 1'))
