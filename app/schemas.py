@@ -18,3 +18,32 @@ class Book(BookBase):
 
     class Config:
         orm_mode = True
+
+class ProfileBase(BaseModel):
+    pusername: str
+    pname: str
+    pemail: str
+    paddress: str
+
+class ProfileCreate(ProfileBase):
+    pass
+class Profile(ProfileBase):
+    ppassword: str
+
+    class Config:
+        orm_mode = True
+
+class CreditBase(BaseModel):
+    cusername: str
+    csc: int
+    czipcode: int
+    cexpdate: str
+
+class CreditCreate(CreditBase):
+    pass
+
+class Credit(CreditBase):
+    ccreditcard: int
+
+    class Config:
+        orm_mode = True
