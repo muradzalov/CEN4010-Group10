@@ -53,11 +53,12 @@ async def add_book_to_cart(user_id: int, book_id: int, db: Session = Depends(get
     # Parameters Sent: User Id
     # Response Data: List of Book Objects
     
-    @router.get("/shopping-cart/{user_id}/items", response_model=List[dict])
-    async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
-        cart_exists = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).count()
+@router.get("/shopping-cart/{user_id}/items", response_model=List[dict])
+async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
+    cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
+    
     cart_items = db.query(
         CartItemModel.item_id,
         CartItemModel.quantity,
@@ -65,7 +66,7 @@ async def add_book_to_cart(user_id: int, book_id: int, db: Session = Depends(get
         BookModel.author,
         BookModel.genre,
         BookModel.price
-        ).join(BookModel, CartItemModel.book_id == BookModel.id).filter(CartItemModel.cart_id == cart_exists.cart_id).all()
+    ).join(BookModel, CartItemModel.book_id == BookModel.id).filter(CartItemModel.cart_id == cart.cart_id).all()
     result = []
     for item_id, quantity, title, author, genre, price in cart_items:
         item_data = {
@@ -79,7 +80,9 @@ async def add_book_to_cart(user_id: int, book_id: int, db: Session = Depends(get
             }
         }
         result.append(item_data)
-        return result
+
+    return result
+
 
 
 # Functionality: Delete a book from the shopping cart instance for that user
