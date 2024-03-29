@@ -57,7 +57,10 @@ class CartItemCreate(CartItemBase):
     pass
 
 class CartItem(CartItemBase):
+    item_id: int
     book_id: int
+    quantity: int
+    book: Book 
 
     class Config:
         orm_mode = True
