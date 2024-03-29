@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 from pydantic import BaseModel
 from typing import List, Optional
+=======
+from pydantic import BaseModel, Json
+from typing import List
+>>>>>>> 251d63ef791b4fa4dc91480f5ac827bc30c97cd8
 
 # Pydantic models for data validation
 class BookBase(BaseModel):
@@ -7,9 +12,11 @@ class BookBase(BaseModel):
     author: str
     genre: str
     rating: float
+    rating_list: List[Json]
     copies_sold: int
     price: float
     publisher: str
+    comment_list: List[Json]
 
 class BookCreate(BookBase):
     pass
@@ -23,13 +30,20 @@ class Book(BookBase):
 class UserBase(BaseModel):
     username: str
     password: str
+<<<<<<< HEAD
     email: str
     home_address: Optional[str]
+=======
+    name: str
+    email: str
+    address: str
+>>>>>>> 251d63ef791b4fa4dc91480f5ac827bc30c97cd8
 
 class UserCreate(UserBase):
     pass
 
 class User(UserBase):
+<<<<<<< HEAD
     user_id: int
 
     class Config:
@@ -58,6 +72,9 @@ class CartItemCreate(CartItemBase):
 
 class CartItem(CartItemBase):
     book_id: int
+=======
+    id: int
+>>>>>>> 251d63ef791b4fa4dc91480f5ac827bc30c97cd8
 
     class Config:
         orm_mode = True
