@@ -51,14 +51,36 @@ async def add_book_to_cart(user_id: int, book_id: int, db: Session = Depends(get
     # Logic: Given a user Id, return a list of books that are in the shopping cart
     # HTTP Request Type: GET
     # Parameters Sent: User Id
-    # Response Data: List of Book Objects 
-@router.get("/shopping-cart/{user_id}/items", response_model=List[CartItem])
-async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
-    cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
+    # Response Data: List of Book Objects
+    
+    @router.get("/shopping-cart/{user_id}/items", response_model=List[dict])
+    async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
+        cart_exists = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).count()
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
+    cart_items = db.query(
+        CartItemModel.item_id,
+        CartItemModel.quantity,
+        BookModel.title,
+        BookModel.author,
+        BookModel.genre,
+        BookModel.price
+        ).join(BookModel, CartItemModel.book_id == BookModel.id).filter(CartItemModel.cart_id == cart_exists.cart_id).all()
+    result = []
+    for item_id, quantity, title, author, genre, price in cart_items:
+        item_data = {
+            "item_id": item_id,
+            "quantity": quantity,
+            "book": {
+                "title": title,
+                "author": author,
+                "genre": genre,
+                "price": price
+            }
+        }
+        result.append(item_data)
+        return result
 
-    return cart.cart_items
 
 # Functionality: Delete a book from the shopping cart instance for that user
     # Logic: Given a book Id and a User Id, remove the book from the user’s shopping cart
