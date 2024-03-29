@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, JSON, ARRAY
 from .dependencies import Base
 
 
@@ -11,6 +11,7 @@ class Book(Base):
     author = Column(String, index=True)
     genre = Column(String, index=True)
     rating = Column(Float)
+    rating_list = Column(ARRAY(JSON))
     copies_sold = Column(Integer)
     price = Column(Float)
     publisher = Column(String, index=True)
@@ -35,3 +36,14 @@ class CreditCard(Base):
     csc = Column(Integer)
     czipcode = Column(Integer)
     cexpdate = Column(Integer)
+
+# SQLAlchemy model for the "users" table
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True)
+    password = Column(String, index=True)
+    name = Column(String, index=True)
+    email = Column(String, index=True)
+    address = Column(String, index=True)
