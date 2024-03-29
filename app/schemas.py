@@ -56,12 +56,8 @@ class CartItemBase(BaseModel):
 class CartItemCreate(CartItemBase):
     pass
 
-class CartItem(BaseModel):
-    item_id: int
-    cart_id: int
+class CartItem(CartItemBase):
     book_id: int
-    quantity: int
-    book: BookBase 
 
     class Config:
         orm_mode = True

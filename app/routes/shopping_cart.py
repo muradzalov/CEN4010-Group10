@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..dependencies import get_db
 from ..models import ShoppingCart as ShoppingCartModel, CartItem as CartItemModel, Book as BookModel, User as UserModel
-from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem, BookBase
+from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem
 
 router = APIRouter()
 
@@ -58,26 +58,7 @@ async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
 
-    cart_items = db.query(CartItemModel).filter(CartItemModel.cart_id == cart.cart_id).all()
-    result = []
-
-    for item in cart_items:
-        book = db.query(BookModel).filter(BookModel.id == item.book_id).first()
-        if not book:
-            continue
-        book_data = BookBase.from_orm(book)
-
-        cart_item_data = {
-            "item_id": item.item_id,
-            "cart_id": item.cart_id,
-            "book_id": item.book_id,
-            "quantity": item.quantity,
-            "book": book_data
-        }
-        result.append(cart_item_data)
-
-    return result
-
+    return cart.cart_items
 
 # Functionality: Delete a book from the shopping cart instance for that user
     # Logic: Given a book Id and a User Id, remove the book from the user’s shopping cart
