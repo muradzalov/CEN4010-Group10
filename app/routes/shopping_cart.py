@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..dependencies import get_db
 from ..models import ShoppingCart as ShoppingCartModel, CartItem as CartItemModel, Book as BookModel, User as UserModel
-from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem
+from ..schemas import ShoppingCart as ShoppingCartSchema, CartItem, BookBase
 
 router = APIRouter()
 
@@ -57,20 +57,22 @@ async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
-    cart_items = (
+    cart_items_with_books = (
         db.query(CartItemModel)
         .join(BookModel, CartItemModel.book_id == BookModel.id)
         .filter(CartItemModel.cart_id == cart.cart_id)
         .all()
     )
+
     result = []
-    for item in cart_items:
+    for item in cart_items_with_books:
+        book_data = BookBase.from_orm(item.book)
         cart_item_data = CartItem(
             item_id=item.item_id,
             cart_id=item.cart_id,
             book_id=item.book_id,
             quantity=item.quantity,
-            book=item.book
+            book=book_data
         )
         result.append(cart_item_data)
 
