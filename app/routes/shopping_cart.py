@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, joinedload
-
+from sqlalchemy.orm import Session
 from typing import List
 from ..dependencies import get_db
 from ..models import ShoppingCart as ShoppingCartModel, CartItem as CartItemModel, Book as BookModel, User as UserModel
@@ -58,9 +57,8 @@ async def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     cart = db.query(ShoppingCartModel).filter(ShoppingCartModel.user_id == user_id).first()
     if not cart:
         raise HTTPException(status_code=404, detail="Shopping cart not found")
-    cart_items = db.query(CartItemModel).options(joinedload(CartItemModel.book)).filter(CartItemModel.cart_id == cart.cart_id).all()
-    result = [CartItem.from_orm(item) for item in cart_items] 
-    return result
+
+    return cart.cart_items
 
 # Functionality: Delete a book from the shopping cart instance for that user
     # Logic: Given a book Id and a User Id, remove the book from the user’s shopping cart
